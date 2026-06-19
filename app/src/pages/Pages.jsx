@@ -7,6 +7,7 @@ import constituencyData from "../../public/data/constituency.json";
 import partyData from "../../public/data/party.json";
 import manifestoData from "../../public/data/manifesto.json";
 import hotSeatsData from "../../public/data/hot-seats.json";
+import voteDifferenceData from "../../public/data/vote-difference.json";
 
 function SiteLayout({ title, description, children, breadcrumbRight, headerRight }) {
   return (
@@ -721,71 +722,149 @@ export function ManifestoDetail() {
 }
 
 export function Parties() {
+  const sortedParties = [...partyData].sort((a, b) => {
+    const winsA = a.wins || 0;
+    const winsB = b.wins || 0;
+    if (winsA !== winsB) return winsB - winsA;
+    const votesA = Number(a.proportional_votes?.replace(/[^0-9]/g, "") || 0);
+    const votesB = Number(b.proportional_votes?.replace(/[^0-9]/g, "") || 0);
+    return votesB - votesA;
+  });
+
   return (
     <SiteLayout
       title="राजनीतिक दलहरु"
       description="Review participating political parties and their results in Nepal Election 2082."
     >
       <div
-        className="dn-grid dn-grid-small"
         style={{
           marginTop: "20px",
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
           gap: "20px",
         }}
       >
-        {partyData.map((party) => (
+        {sortedParties.map((party) => (
           <div
             key={party.slug}
             style={{
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              padding: "20px",
-              backgroundColor: "#fff",
-              textAlign: "center",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+              background: "linear-gradient(180deg, rgba(255,239,239,0.85), #fff)",
+              border: "1px solid rgba(191,30,46,0.15)",
+              borderRadius: "18px",
+              padding: "24px 20px",
+              minHeight: "320px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
             }}
           >
-            {party.logo && party.logo !== "#" && (
+            <div>
+              <div
+                style={{
+                  width: "86px",
+                  height: "86px",
+                  margin: "0 auto 18px",
+                  borderRadius: "50%",
+                  background: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
+                  overflow: "hidden",
+                }}
+              >
                 <img
-                  src={party.logo}
+                  src={
+                    party.logo && party.logo !== "#"
+                      ? party.logo.startsWith("http")
+                        ? party.logo
+                        : party.logo.startsWith("/")
+                        ? party.logo
+                        : `/${party.logo}`
+                      : "/assets/images/placeholder.png"
+                  }
                   alt={party.name}
-                  style={{
-                    maxWidth: "80px",
-                    height: "auto",
-                    marginBottom: "15px",
-                    borderRadius: "4px",
+                  style={{ maxWidth: "72px", maxHeight: "72px", objectFit: "contain" }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/assets/images/placeholder.png";
                   }}
                 />
-              )}
-            <h3
-              style={{
-                fontSize: "18px",
-                fontWeight: "bold",
-                marginBottom: "10px",
-                color: "#333",
-              }}
-            >
-              {party.name}
-            </h3>
-            <div style={{ marginBottom: "15px", fontSize: "14px", color: "#666" }}>
-              <strong>अध्यक्ष:</strong> {party.leader || "—"}
+              </div>
+
+              <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                <h3
+                  style={{
+                    fontSize: "17px",
+                    fontWeight: "700",
+                    margin: "0 0 10px",
+                    lineHeight: "1.3",
+                    color: "#991d2b",
+                  }}
+                >
+                  {party.name}
+                </h3>
+                <p style={{ margin: 0, fontSize: "13px", color: "#5d5d5d", lineHeight: "1.5" }}>
+                  अध्यक्ष: {party.leader || "—"}
+                </p>
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "12px",
+                  marginTop: "10px",
+                }}
+              >
+                <div
+                  style={{
+                    background: "#fff",
+                    borderRadius: "14px",
+                    padding: "14px",
+                    textAlign: "center",
+                    border: "1px solid #f1e6e9",
+                  }}
+                >
+                  <div style={{ fontSize: "14px", color: "#999" }}>सिट</div>
+                  <div style={{ fontSize: "20px", fontWeight: "800", color: "#bf1e2e", marginTop: "6px" }}>
+                    {party.wins || 0}
+                  </div>
+                </div>
+                <div
+                  style={{
+                    background: "#fff",
+                    borderRadius: "14px",
+                    padding: "14px",
+                    textAlign: "center",
+                    border: "1px solid #f1e6e9",
+                  }}
+                >
+                  <div style={{ fontSize: "14px", color: "#999" }}>सम्पूर्ण मत</div>
+                  <div style={{ fontSize: "20px", fontWeight: "800", color: "#bf1e2e", marginTop: "6px" }}>
+                    {party.proportional_votes || "०"}
+                  </div>
+                </div>
+              </div>
             </div>
-            <Link
-              to={`/party/${party.slug}`}
-              style={{
-                display: "inline-block",
-                padding: "8px 16px",
-                backgroundColor: "#0066cc",
-                color: "#fff",
-                textDecoration: "none",
-                borderRadius: "4px",
-                fontWeight: "bold",
-              }}
-            >
-              विवरण हेर्नुहोस्
-            </Link>
+
+            <div style={{ marginTop: "20px", textAlign: "center" }}>
+              <Link
+                to={`/party/${party.slug}`}
+                style={{
+                  display: "inline-block",
+                  padding: "10px 18px",
+                  backgroundColor: "#bf1e2e",
+                  color: "#fff",
+                  textDecoration: "none",
+                  borderRadius: "999px",
+                  fontWeight: "700",
+                  fontSize: "13px",
+                }}
+              >
+                विस्तृत जानकारी
+              </Link>
+            </div>
           </div>
         ))}
       </div>
@@ -915,12 +994,292 @@ export function Videos() {
 }
 
 export function VoteDifference() {
+  const [partyFilter, setPartyFilter] = useState("");
+  const [provinceFilter, setProvinceFilter] = useState("");
+  const [districtFilter, setDistrictFilter] = useState("");
+
+  const voteItems = useMemo(() => {
+    return voteDifferenceData.map((item) => {
+      const match = constituencyData.find((c) => c.name === item.constituency);
+      return {
+        ...item,
+        district: match?.district_name || "",
+      };
+    });
+  }, []);
+
+  const partyOptions = useMemo(
+    () => [
+      ...new Set(voteItems.flatMap((item) => item.candidates.map((candidate) => candidate.party))),
+    ],
+    [voteItems]
+  );
+
+  const provinceOptions = useMemo(
+    () => [
+      ...new Set(voteItems.map((item) => item.province).filter(Boolean)),
+    ],
+    [voteItems]
+  );
+
+  const districtOptions = useMemo(
+    () => [
+      ...new Set(voteItems.map((item) => item.district).filter(Boolean)),
+    ],
+    [voteItems]
+  );
+
+  const filteredItems = useMemo(() => {
+    return voteItems.filter((item) => {
+      const partyMatch =
+        !partyFilter || item.candidates.some((candidate) => candidate.party === partyFilter);
+      const provinceMatch = !provinceFilter || item.province === provinceFilter;
+      const districtMatch = !districtFilter || item.district === districtFilter;
+      return partyMatch && provinceMatch && districtMatch;
+    });
+  }, [partyFilter, provinceFilter, districtFilter, voteItems]);
+
   return (
     <SiteLayout
       title="मतान्तर"
       description="Track the vote difference across constituencies in the 2082 election."
     >
-      <p>मतान्तर विश्लेषण पृष्ठ। यहाँ विभिन्न क्षेत्रका मुख्य उम्मेदवारहरू बीचको मतान्तर देखाइनेछ।</p>
+      <div
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "12px",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <select
+          value={partyFilter}
+          onChange={(e) => setPartyFilter(e.target.value)}
+          style={{
+            minWidth: "160px",
+            padding: "10px 12px",
+            borderRadius: "6px",
+            border: "1px solid #ddd",
+            fontSize: "14px",
+            background: "#fff",
+          }}
+        >
+          <option value="">पार्टी</option>
+          {partyOptions.map((party) => (
+            <option key={party} value={party}>
+              {party}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={provinceFilter}
+          onChange={(e) => setProvinceFilter(e.target.value)}
+          style={{
+            minWidth: "160px",
+            padding: "10px 12px",
+            borderRadius: "6px",
+            border: "1px solid #ddd",
+            fontSize: "14px",
+            background: "#fff",
+          }}
+        >
+          <option value="">प्रदेश</option>
+          {provinceOptions.map((province) => (
+            <option key={province} value={province}>
+              {province}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={districtFilter}
+          onChange={(e) => setDistrictFilter(e.target.value)}
+          style={{
+            minWidth: "160px",
+            padding: "10px 12px",
+            borderRadius: "6px",
+            border: "1px solid #ddd",
+            fontSize: "14px",
+            background: "#fff",
+          }}
+        >
+          <option value="">जिल्ला</option>
+          {districtOptions.map((district) => (
+            <option key={district} value={district}>
+              {district}
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={() => {
+            setPartyFilter("");
+            setProvinceFilter("");
+            setDistrictFilter("");
+          }}
+          style={{
+            padding: "10px 18px",
+            borderRadius: "6px",
+            border: "none",
+            backgroundColor: "#bf1e2e",
+            color: "#fff",
+            cursor: "pointer",
+            fontWeight: "700",
+          }}
+        >
+          खोज्नुहोस्
+        </button>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px" }}>
+        {filteredItems.length > 0 ? (
+          filteredItems.map((item) => (
+            <div
+              key={item.constituency}
+              style={{
+                background: "#fff",
+                border: "1px solid #e6e6e6",
+                borderRadius: "16px",
+                overflow: "hidden",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.04)",
+              }}
+            >
+              <div
+                style={{
+                  padding: "18px 18px 14px",
+                  borderBottom: "1px solid #f0f0f0",
+                  background: "#fbfbfb",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    gap: "10px",
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: "700",
+                        color: "#222",
+                        marginBottom: "6px",
+                      }}
+                    >
+                      {item.constituency}
+                    </div>
+                    <div style={{ fontSize: "13px", color: "#666" }}>
+                      {item.province}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div
+                      style={{
+                        fontSize: "22px",
+                        fontWeight: "800",
+                        color: "#2c9a6b",
+                      }}
+                    >
+                      {item.voteDifference}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#999" }}>
+                      {item.voteDifferencePercent}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ padding: "18px", display: "grid", gap: "12px" }}>
+                {item.candidates.map((candidate, index) => {
+                  const fixedImageUrl =
+                    candidate.image?.replace(/^\.\.\/npcdn\.ratopati\.com/, "https://npcdn.ratopati.com") ||
+                    "/assets/images/placeholder.png";
+                  return (
+                    <div
+                      key={index}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "14px",
+                        padding: "12px",
+                        borderRadius: "12px",
+                        background: candidate.winner ? "#edf9f0" : "#fff",
+                        border: candidate.winner ? "1px solid #cdecd4" : "1px solid #f0f0f0",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "52px",
+                          height: "52px",
+                          borderRadius: "50%",
+                          overflow: "hidden",
+                          background: "#f3f3f3",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <img
+                          src={fixedImageUrl}
+                          alt={candidate.name}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/assets/images/placeholder.png";
+                          }}
+                        />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: "14px",
+                            fontWeight: "700",
+                            color: "#212121",
+                          }}
+                        >
+                          {candidate.name}
+                        </div>
+                        <div style={{ fontSize: "12px", color: "#666", marginTop: "2px" }}>
+                          {candidate.party}
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <div
+                          style={{
+                            fontSize: "16px",
+                            fontWeight: "700",
+                            color: "#2c9a6b",
+                          }}
+                        >
+                          {candidate.votes}
+                        </div>
+                        <div style={{ fontSize: "11px", color: "#888" }}>मत</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              background: "#fff",
+              border: "1px solid #eee",
+              borderRadius: "12px",
+              padding: "40px 20px",
+              textAlign: "center",
+              color: "#666",
+            }}
+          >
+            कुनै परिणाम फेला परेन। फिल्टर हटाएर पुन: प्रयास गर्नुहोस्।
+          </div>
+        )}
+      </div>
     </SiteLayout>
   );
 }
