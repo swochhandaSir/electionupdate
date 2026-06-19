@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import NepalMap from "../components/map/map";
 
 export default function Home() {
   const [selectedProvince, setSelectedProvince] = useState("");
@@ -130,7 +131,7 @@ export default function Home() {
       </div>
 
       {/* Header */}
-      <header>
+      {/* <header>
         <div className="header-section">
           <div className="elc-container">
             <div className="header-holder flex flex-middle flex-wrap flex-between">
@@ -157,7 +158,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       {/* Navigation */}
       <nav className="navigation">
@@ -212,17 +213,6 @@ export default function Home() {
               </li>
               <li>
                 <Link to="/manifesto">घोषणा पत्र</Link>
-              </li>
-              <li>
-                <Link to="/videos">निर्वाचन भिडियो</Link>
-              </li>
-              <li>
-                <a
-                  href="https://www.ratopati.com/segment/parliament-election-2082"
-                  target="_blank"
-                >
-                  समाचार
-                </a>
               </li>
             </ul>
             <div className="nav-right">
@@ -308,7 +298,7 @@ export default function Home() {
           <div className="elc-container">
             <div className="mapcontainer" id="constituency-map">
               <div className="spinner-wrapper flex flex-middle flex-center">
-                <div className="spinner"></div>
+                <NepalMap/>
               </div>
             </div>
           </div>
