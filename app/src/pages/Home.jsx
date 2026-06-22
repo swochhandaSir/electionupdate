@@ -184,7 +184,7 @@ export default function Home() {
               </li>
               <li>
                 <a href="#" onClick={(e) => e.preventDefault()}>
-                  निर्वाचन <ChevronDown size={16} />
+                  निर्वाचन <ChevronDown size={18}/>
                 </a>
                 <ul>
                   <li>
