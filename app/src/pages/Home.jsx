@@ -22,6 +22,7 @@ export default function Home() {
 	const [hoveredConstituency, setHoveredConstituency] = useState(null);
 	const [constituenciesData, setConstituenciesData] = useState([]);
 	const [candidatesData, setCandidatesData] = useState([]);
+	const [selectedLegendParty, setSelectedLegendParty] = useState("");
 
 	// Load constituency data on mount
 	useEffect(() => {
@@ -160,16 +161,17 @@ export default function Home() {
 		}, 10000); // ⬅️ adjust time (3–6 sec recommended)
 	};
 
-	const legendItems = [{ name: "सबै", color: "#ddd" }]
+	const legendItems = [{ name: "सबै", color: "#ddd", value: "" }]
 		.concat(
 			parties.map((p) => ({
 				name: p.name,
 				color: p.color,
+				value: p.name,
 			})),
 		)
 		.concat([
-			{ name: "स्वतन्त्र", color: "#043e62" },
-			{ name: "निकुञ्ज तथा आरक्ष", color: "#55e5a5" },
+			{ name: "स्वतन्त्र", color: "#043e62", value: "स्वतन्त्र" },
+			{ name: "निकुञ्ज तथा आरक्ष", color: "#55e5a5", value: "निकुञ्ज तथा आरक्ष" },
 		]);
 
 	const handleSubmit = (e) => {
@@ -179,6 +181,9 @@ export default function Home() {
 
 	const candidateMap = new Map(
 		candidatesData.map((candidate) => [candidate.slug, candidate]),
+	);
+	const partyColorMap = Object.fromEntries(
+		legendItems.map((item) => [item.value || item.name, item.color]),
 	);
 
 	return (
@@ -316,6 +321,9 @@ export default function Home() {
 										onConstituencyHover={handleConstituencyHover}
 										onConstituencyLeave={handleConstituencyLeave}
 										constituenciesData={constituenciesData}
+										candidatesData={candidatesData}
+										selectedParty={selectedLegendParty}
+										partyColorMap={partyColorMap}
 									/>
 									<div
 										style={{
@@ -334,11 +342,18 @@ export default function Home() {
 										{legendItems.map((item, idx) => (
 											<div
 												key={idx}
+												onClick={() => setSelectedLegendParty(item.value)}
 												style={{
 													display: "flex",
 													alignItems: "center",
 													gap: "8px",
 													marginBottom: "6px",
+													cursor: "pointer",
+													fontWeight: selectedLegendParty === item.value ? 700 : 400,
+													opacity:
+														!selectedLegendParty || selectedLegendParty === item.value
+															? 1
+															: 0.65,
 												}}
 											>
 												<span

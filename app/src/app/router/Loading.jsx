@@ -28,9 +28,7 @@ const Loading = () => {
 	};
 
 	return (
-		<>
-			<MainLayout />
-
+		<MainLayout bare>
 			<main style={containerStyle}>
 				<div style={spinnerStyle}></div>
 				<p style={textStyle}>लोड हुँदैछ...</p>
@@ -49,7 +47,7 @@ const Loading = () => {
           `}
 				</style>
 			</main>
-		</>
+		</MainLayout>
 	);
 };
 

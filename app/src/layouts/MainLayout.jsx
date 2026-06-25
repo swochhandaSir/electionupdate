@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
+import Header from "../components/ui/Header/Header";
+import Footer from "../components/ui/Footer/Footer";
 
 /**
  * MainLayout Component
@@ -15,35 +17,7 @@ export function MainLayout({
 }) {
   return (
     <>
-      <header>
-        <div className="header-section">
-          <div className="elc-container">
-            <div className="header-holder flex flex-middle flex-wrap flex-between">
-              <div className="header-logo">
-                <Link to="/" className="logo" target="_blank" rel="noopener noreferrer">
-                  <img
-                    src="/assets/images/ratopati-logo_zD9OASMMFx.png"
-                    alt="Logo"
-                  />
-                </Link>
-              </div>
-              <div className="header-right">
-                <img
-                  src="/assets/images/election-2082_UbmQ0ktDVN.png"
-                  alt="प्रतिनिधि सभा निर्वाचन २०८२"
-                />
-              </div>
-              <span className="btn-search fa fa-search btn-trigger"></span>
-              <button type="button" className="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <Header/>
       <nav className="navigation">
         <div className="elc-container">
           <div className="menu-container">
@@ -102,11 +76,11 @@ export function MainLayout({
               <span className="btn-search fa fa-search btn-trigger"></span>
               <a
                 className="button"
-                href="https://www.ratopati.com/"
+                href="https://www.jointwithus.com.np/"
                 target="_blank"
                 rel="noreferrer noopener"
               >
-                रातोपाटी होमपेज
+                जोइन्ट विथ अस होमपेज
               </a>
             </div>
           </div>
@@ -147,6 +121,7 @@ export function MainLayout({
           </section>
         </div>
       )}
+      <Footer />
     </>
   );
 }

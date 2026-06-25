@@ -1,14 +1,51 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 
+const PARK_RESERVE_LABEL = "निकुञ्ज तथा आरक्ष";
+const FILTERED_OUT_COLOR = "#b7dcf2";
+
 export default function NepalMap({
 	onConstituencyHover,
 	onConstituencyLeave,
 	constituenciesData = [],
+	candidatesData = [],
+	selectedParty = "",
+	partyColorMap = {},
 }) {
 	const navigate = useNavigate();
 
 	let leaveCooldown = false;
+
+	const getConstituencyForGroupId = (groupId, districtToConstituenciesMap) => {
+		if (districtToConstituenciesMap[groupId]) {
+			return districtToConstituenciesMap[groupId][0];
+		}
+
+		const match = groupId.match(/^([a-z]+)(\d+)?$/);
+		if (!match) {
+			return null;
+		}
+
+		const baseDistrictSlug = match[1];
+		const constituencyIndex = match[2] ? parseInt(match[2]) - 1 : 0;
+		const constituencies = districtToConstituenciesMap[baseDistrictSlug];
+
+		if (!constituencies || constituencyIndex >= constituencies.length) {
+			return null;
+		}
+
+		return constituencies[constituencyIndex];
+	};
+
+	const colorShapes = (group, fill) => {
+		group.querySelectorAll("path, polygon").forEach((shape) => {
+			if (!shape.dataset.originalFill) {
+				shape.dataset.originalFill = shape.getAttribute("fill") || "";
+			}
+
+			shape.setAttribute("fill", fill || shape.dataset.originalFill);
+		});
+	};
 
 	// Setup hover handlers when SVG is loaded
 	useEffect(() => {
@@ -29,29 +66,13 @@ export default function NepalMap({
 
 			groups.forEach((group) => {
 				const groupId = group.getAttribute("id");
+				const constituency = getConstituencyForGroupId(
+					groupId,
+					districtToConstituenciesMap,
+				);
 
-				// Try to find a district match for this group ID
-				// Check if the group ID matches any district slug directly
-				if (districtToConstituenciesMap[groupId]) {
-					// This group ID matches a district with only one constituency
-					const constituency = districtToConstituenciesMap[groupId][0];
+				if (constituency) {
 					attachEventListeners(group, constituency);
-				} else {
-					// Check if this is a numbered constituency like "gulmi1", "gulmi2"
-					// Extract the base district name (remove trailing digits)
-					const match = groupId.match(/^([a-z]+)(\d+)?$/);
-					if (match) {
-						const baseDistrictSlug = match[1];
-						const constituencyIndex = match[2] ? parseInt(match[2]) - 1 : 0;
-
-						if (districtToConstituenciesMap[baseDistrictSlug]) {
-							const constituencies = districtToConstituenciesMap[baseDistrictSlug];
-							if (constituencyIndex < constituencies.length) {
-								const constituency = constituencies[constituencyIndex];
-								attachEventListeners(group, constituency);
-							}
-						}
-					}
 				}
 			});
 
@@ -74,6 +95,74 @@ export default function NepalMap({
 			}
 		}
 	}, [constituenciesData, onConstituencyHover, navigate]);
+
+	useEffect(() => {
+		const svg = document.getElementById("constituency-map");
+		if (!svg || constituenciesData.length === 0) {
+			return;
+		}
+
+		const candidateMap = new Map(
+			candidatesData.map((candidate) => [candidate.slug, candidate]),
+		);
+		const districtToConstituenciesMap = {};
+
+		constituenciesData.forEach((constituency) => {
+			const districtSlug = constituency.district_slug;
+			if (!districtToConstituenciesMap[districtSlug]) {
+				districtToConstituenciesMap[districtSlug] = [];
+			}
+			districtToConstituenciesMap[districtSlug].push(constituency);
+		});
+
+		svg.querySelectorAll("g[id]").forEach((group) => {
+			const groupId = group.getAttribute("id");
+			const isParkReserve = groupId === "national-park";
+
+			if (isParkReserve) {
+				if (!selectedParty) {
+					colorShapes(group);
+					return;
+				}
+
+				colorShapes(
+					group,
+					selectedParty === PARK_RESERVE_LABEL
+						? partyColorMap[PARK_RESERVE_LABEL] || "#55e5a5"
+						: FILTERED_OUT_COLOR,
+				);
+				return;
+			}
+
+			const constituency = getConstituencyForGroupId(
+				groupId,
+				districtToConstituenciesMap,
+			);
+
+			if (!constituency) {
+				return;
+			}
+
+			const winner = constituency.candidates
+				?.map((candidate) => ({
+					...candidate,
+					...candidateMap.get(candidate.slug),
+				}))
+				.find((candidate) => candidate.is_winner || candidate.isWinner);
+			const winnerParty = winner?.party;
+			const shouldHighlight = selectedParty && winnerParty === selectedParty;
+			const winnerColor = partyColorMap[winnerParty];
+
+			colorShapes(
+				group,
+				selectedParty
+					? shouldHighlight
+						? winnerColor
+						: FILTERED_OUT_COLOR
+					: undefined,
+			);
+		});
+	}, [constituenciesData, candidatesData, selectedParty, partyColorMap]);
 
 	return (
 		<svg
