@@ -32,8 +32,8 @@ const Footer = () => {
 
 								<a
 									href="https://www.facebook.com/nirmala.dhamala.37/"
-                                    target="_blank"
-                                    rel="noreferrer"
+									target="_blank"
+									rel="noreferrer"
 									className="social-btn"
 								>
 									<svg
@@ -107,8 +107,10 @@ const Footer = () => {
 										target="_blank"
 										rel="noreferrer"
 									>
-										Location Map
-									</a>
+										<h2>Location Map</h2>
+										<h3>कोशी प्रदेश, सदाबहार मार्ग, Itahari 56705</h3>
+										<h3>M78C+4R Itahari</h3>
+									</a>	
 								</li>
 							</ul>
 

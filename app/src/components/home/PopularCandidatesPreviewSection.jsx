@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
-import candidatesData from "../../../public/data/candidates.json";
+import candidatesData from "../../data/candidates.json";
 import { toNepaliNumber } from "../../utils";
 
 const PREVIEW_COUNT = 8;

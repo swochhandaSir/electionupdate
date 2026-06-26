@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { useMemo, useState } from "react";
-import candidatesData from "../../../public/data/candidates.json";
-import provinceData from "../../../public/data/province.json";
-import constituencyData from "../../../public/data/constituency.json";
-import partyData from "../../../public/data/party.json";
+import candidatesData from "../../data/candidates.json";
+import provinceData from "../../data/province.json";
+import constituencyData from "../../data/constituency.json";
+import partyData from "../../data/party.json";
 import ConstituencyElectionCard from "../election/ConstituencyElectionCard";
 import { districtsForProvince } from "../../utils/geoUtils";
 

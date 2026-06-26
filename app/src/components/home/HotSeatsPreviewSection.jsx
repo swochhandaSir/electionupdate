@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
-import hotSeatsData from "../../../public/data/hot-seats.json";
-import constituencyData from "../../../public/data/constituency.json";
-import candidatesData from "../../../public/data/candidates.json";
-import partyData from "../../../public/data/party.json";
+import hotSeatsData from "../../data/hot-seats.json";
+import constituencyData from "../../data/constituency.json";
+import candidatesData from "../../data/candidates.json";
+import partyData from "../../data/party.json";
 import { toNepaliNumber } from "../../utils";
 import { fixImageUrl } from "../../utils/imageUtils";
 import { cleanRouteSlug } from "../../utils/geoUtils";

@@ -47,6 +47,8 @@ export default function ConstituencyElectionCard({
                     className="candidate-photo"
                     src={info?.image || "/assets/images/placeholder.png"}
                     alt={candidate.name}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </Link>
                 <div>
@@ -71,6 +73,8 @@ export default function ConstituencyElectionCard({
                       className="party-flag"
                       src={partyLogo}
                       alt={info?.party}
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.style.display = "none";
@@ -96,6 +100,8 @@ export default function ConstituencyElectionCard({
             <img
               src="https://www.ratopati.com/build/img/facebook.svg"
               alt="facebook"
+              loading="lazy"
+              decoding="async"
             />
           </a>
           <a
@@ -106,6 +112,8 @@ export default function ConstituencyElectionCard({
             <img
               src="https://www.ratopati.com/build/img/twitter-x.svg"
               alt="twitter"
+              loading="lazy"
+              decoding="async"
             />
           </a>
         </div>

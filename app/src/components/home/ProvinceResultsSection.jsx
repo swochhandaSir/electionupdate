@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import provinceData from "../../../public/data/province.json";
+import provinceData from "../../data/province.json";
 import { toNepaliNumber } from "../../utils";
 
 const provinceOrder = [
@@ -180,18 +180,14 @@ export default function ProvinceResultsSection() {
 
                 <div style={{ padding: "12px 16px", borderTop: "1px solid rgba(0,0,0,0.08)", marginTop: "auto" }}>
                   <Link
+                    className="btn"
                     to={`/province/${ province.slug || "" }`}
                     style={{
                       display: "inline-block",
                       width: "100%",
                       textAlign: "center",
-                      padding: "10px 0",
-                      backgroundColor: "#fff",
-                      color: "#333",
-                      border: "1px solid #d5d5d5",
-                      borderRadius: "6px",
+                      boxSizing: "border-box",
                       textDecoration: "none",
-                      fontWeight: 600,
                     }}
                    target="_blank" rel="noopener noreferrer">
                     विस्तृत विवरण
@@ -240,18 +236,14 @@ export default function ProvinceResultsSection() {
 
                 <div style={{ padding: "12px 16px", borderTop: "1px solid rgba(0,0,0,0.08)", marginTop: "auto" }}>
                   <Link
+                    className="btn"
                     to={`/province/${ province.slug || "" }`}
                     style={{
                       display: "inline-block",
                       width: "100%",
                       textAlign: "center",
-                      padding: "10px 0",
-                      backgroundColor: "#fff",
-                      color: "#333",
-                      border: "1px solid #d5d5d5",
-                      borderRadius: "6px",
+                      boxSizing: "border-box",
                       textDecoration: "none",
-                      fontWeight: 600,
                     }}
                    target="_blank" rel="noopener noreferrer">
                     विस्तृत विवरण
